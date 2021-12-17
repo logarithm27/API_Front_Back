@@ -1,0 +1,27 @@
+{
+  "name": "init-nodejs",
+  "version": "1.0.0",
+  "description": "Initiation de base à nodeJs",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest",
+    "start": "nodemon server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "initiation",
+    "server"
+  ],
+  "author": "plarrat",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^6.1.2",
+    "nodemon": "^2.0.15"
+  },
+  "devDependencies": {
+    "jest": "^27.4.5",
+    "supertest": "^6.1.6"
+  }
+}
