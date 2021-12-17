@@ -1,6 +1,6 @@
 const Category = require('../models/category');
 
-exports.insertCategory = (req, res, next) => {
+exports.insertCategory = (req, res) => {
     const category = new Category({...req.body});
     category.save().then(
       () => {
@@ -17,7 +17,7 @@ exports.insertCategory = (req, res, next) => {
     );
 } 
 
-exports.updateCategory = (req, res, next) => {
+exports.updateCategory = (req, res) => {
     const category = new Category({_id: req.params.id , ...req.body});
     Category.updateOne({_id: req.params.id}, category).then(
       () => {
@@ -34,7 +34,7 @@ exports.updateCategory = (req, res, next) => {
     );
 } 
 
-exports.deleteCategory = (req, res, next) => {
+exports.deleteCategory = (req, res) => {
     Category.deleteOne({_id: req.params.id}).then(
       () => {
         res.status(200).json({
@@ -50,7 +50,7 @@ exports.deleteCategory = (req, res, next) => {
     );
 }
 
-exports.getOneCategory = (req, res, next) => {
+exports.getOneCategory = (req, res) => {
     Category.findOne({
       _id: req.params.id
     }).then(
@@ -66,7 +66,7 @@ exports.getOneCategory = (req, res, next) => {
     );
 }
 
-exports.getAllCategory = (req, res, next) => {
+exports.getAllCategory = (req, res) => {
     Category.find().then(
       (categories) => {
         res.status(200).json(categories);
