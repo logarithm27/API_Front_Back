@@ -1,6 +1,8 @@
 import "./App.css"
 import { useState, useEffect } from "react"
 import NavbarApp from "./components/NavbarApp"
+//import BarcodeScannerComponent from "react-qr-barcode-scanner";
+
 import axios from "axios"
 
 import {
@@ -11,76 +13,116 @@ import {
   FormControl,
   Button,
   Form,
+  Card,
+  ListGroup,
+  ListGroupItem
 } from "react-bootstrap"
 
 export default function App() {
-  const [nbPic, setNbPic] = useState(1)
-  const [produit, setProduit] = useState({})
-  const [formAjout, setFormAjout] = useState({})
-  const [categs, setCategs] = useState([])
+  const [code, setCode] = useState('3274080005003')
+  const [foods, setFoods] = useState({})
+  // const [formAjout, setFormAjout] = useState({})
+  // const [categs, setCategs] = useState([])
+  //const [camView, setCamView] = useState("user");
 
-  useEffect(() => {
-    axios.get("http://localhost:3010/category").then((datas) => {
-      setCategs(datas.data)
-    })
-  }, [])
 
-  function getDatas() {
-    let url = `http://localhost:3010/user/${nbPic}`
+  // useEffect(() => {
+  //   axios.get("http://localhost:3010/category").then((datas) => {
+  //     setCategs(datas.data)
+  //   })
+  // }, [])
 
-    fetch(url)
-      .then(function (res) {
-        return res.json()
-      })
-      .then(function (datas) {
-        alert()
-        // setProduit(datas)
-      })
-  }
 
-  function addUser(event) {
-    event.preventDefault()
-    const { nom, prenom, age, category } = { ...formAjout }
-    alert(category)
-    let url = `http://localhost:3010/user`
+  function getFood() {
+    let url = `https://world.openfoodfacts.org/api/v0/product/${code}.json`
 
-    axios.post(url, {
-      nom,
-      prenom,
-      age,
-      category,
+    axios.get(url).then( data => {
+      console.log(data)
+      setFoods(data)
     })
   }
+
+  // function addUser(event) {
+  //   event.preventDefault()
+  //   const { nom, prenom, age, category } = { ...formAjout }
+  //   alert(category)
+  //   let url = `http://localhost:3010/user`
+
+  //   axios.post(url, {
+  //     nom,
+  //     prenom,
+  //     age,
+  //     category,
+  //   })
+  // }
 
   return (
     <div className="App">
       <NavbarApp />
 
+      {/* <div>
+      <BarcodeScannerComponent
+                    width={465}
+                    height={400}
+                    facingMode={camView}
+                    onUpdate={(err, result) => {
+                        if(result){
+                            setCode(result.text);
+                            // setTimeout(()=>{
+                            //     addProduct(result.text);
+                            //     closeModal();
+                            // },200)
+                            console.log(result)
+                        }
+                        if(err) {
+                          console.log("msg", err)
+                        }
+
+                        console.log('ici')
+
+                    }}
+                />
+      </div> */}
+
       <Container>
         <Row className="mt-5">
           <Col md="6">
-            <h1>Exemple d'appel API </h1>
+            <h1>Scanner ou saisir le code barre d'un produit</h1>
             <hr />
 
             <InputGroup className="mb-3">
               <FormControl
-                placeholder="Saisir un nombre de photos"
-                value={nbPic}
-                onChange={(e) => setNbPic(e.target.value)}
+                placeholder="Saisir code barre"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
               />
               <InputGroup.Text>
-                Nombre de Photos {produit.length}
+                Code barre {code}
               </InputGroup.Text>
             </InputGroup>
 
-            <Button variant="info" onClick={getDatas}>
-              Cliquez moi
+            <Button variant="info" onClick={getFood}>
+              Chercher
             </Button>
           </Col>
         </Row>
       </Container>
 
-      <Container>
+      <Container className="mt-5">
+        <Card style={{ width: '18rem' }}>
+          <Card.Body>
+            <Card.Img variant="top" style={{ width: '150px', height: '200px' }} src={foods?.data?.product?.image_front_small_url} />
+              <ListGroup className="list-group-flush">
+                <ListGroupItem><span>{foods?.data?.product?.product_brands}</span></ListGroupItem>
+                <ListGroupItem><span>{foods?.data?.product?.generic_name_fr}</span></ListGroupItem>
+                <ListGroupItem><span>{foods?.data?.product?.product_name_fr}</span></ListGroupItem>
+                <ListGroupItem><span>{foods?.data?.product?.id}</span></ListGroupItem>
+              </ListGroup>
+          </Card.Body>
+        </Card>
+      </Container>
+
+      {/* <Container>
         <Row mt={5}>
           <Col md="6">
             <h1>Formulaire ajout utilisateur</h1>
@@ -157,7 +199,7 @@ export default function App() {
             </Form>
           </Col>
         </Row>
-      </Container>
+      </Container> */}
     </div>
   )
 }
