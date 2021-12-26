@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BarcodeScannerComponent from "react-qr-barcode-scanner";
 import axios from "axios"
 
@@ -19,8 +19,35 @@ export default function Scan() {
   const [scan, setScan] = useState(false);
   const [logs, setLog] = useState([]);
   const [foods, setFoods] = useState({})
+  const [categs, setCategs] = useState([])
+  const [formAjout, setFormAjout] = useState({})
+  const [show, setShow] = useState(false);
 
-  
+  useEffect(() => {
+    axios.get("http://localhost:3001/api/category").then((datas) => {
+      setCategs(datas.data)
+    })
+  }, [])
+
+  function addProduct(event) {
+    event.preventDefault()
+    const { category} = { ...formAjout }
+    console.log(formAjout)
+    const data = {
+        category,
+        name: foods?.data?.product?.product_name_fr,
+        brandName: foods?.data?.product?.brands,
+        nutriGrade: foods?.data?.product?.nutrition_grade_fr,
+        image: foods?.data?.product?.image_front_small_url
+    }
+    // alert(category)
+    let url = `http://localhost:3001/api/product`
+
+    axios.post(url, data).then( data => {
+        alert('Produit ajouté avec succés')
+    })
+  }
+
   const barcodeScannerComponentHandleUpdate = (error, result) =>
    {
     if (result) 
@@ -33,7 +60,7 @@ export default function Scan() {
 
   function getFood(code) {
     let url = `https://world.openfoodfacts.org/api/v0/product/${code}.json`
-
+    console.log(code)
     axios.get(url).then( data => {
       console.log(data)
       setFoods(data)
@@ -90,6 +117,40 @@ export default function Scan() {
                                 </ListGroup>
                                 </Card.Body>
                             </Card>
+                            <Row className="mt-2">
+                                <Col md={3}>
+                                    <Form.Label>Associez une catégorie</Form.Label>
+                                    <Form onSubmit={(e) => addProduct(e)}>
+                                        <Form.Select
+                                            name="category"
+                                            value={formAjout.category}
+                                            onChange=
+                                            {
+                                                (e) => 
+                                                {
+                                                    let tmp = { ...formAjout }
+                                                    tmp.category = e.target.value
+                                                    setFormAjout(tmp)
+                                                }
+                                            }
+                                        >
+                                        {
+                                            categs.map((categ) => 
+                                            {
+                                            return (
+                                                <option key={categ._id} value={categ._id}>
+                                                    {categ.name}
+                                                </option>
+                                            )
+                                            })
+                                        }
+                                        </Form.Select>
+                                            <Button variant="info" className="mt-3 text-left" type="submit">
+                                                Enregistrer
+                                            </Button>
+                                    </Form>
+                                </Col>
+                            </Row>
                         </Container>
                     }
                 </Col>
