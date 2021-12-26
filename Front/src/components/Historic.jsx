@@ -12,6 +12,11 @@ import {
     Form
 } from "react-bootstrap"
 
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal)
+
 export default function Historic() {
     const [code, setCode] = useState('')
     const [products, setProducts] = useState([])
@@ -29,14 +34,16 @@ export default function Historic() {
     const handleShow = () => setShow(true);
 
     function searchByName() {
-
+        const {name} = {...formAjout}
+        
+        axios.get(`http://localhost:3001/api/product/name/${name}`).then((datas) => {
+           setProducts(datas?.data)
+        })
     }
 
     function searchByCategory() {
         const {category } = { ...formAjout }
-        console.log(category)
         axios.get(`http://localhost:3001/api/product/category/${category}`).then((datas) => {
-            console.log(datas?.data)
            setProducts(datas?.data)
         })
 
@@ -52,7 +59,6 @@ export default function Historic() {
         let url = `http://localhost:3001/api/product`
 
         axios.get(url).then(data => {
-            console.log(data?.data)
             setProducts(data?.data)
         })
     }
@@ -61,9 +67,14 @@ export default function Historic() {
         let url = `http://localhost:3001/api/product/${product._id}`
 
         axios.delete(url).then(data => {
-            console.log(data?.data)
-
-            alert('Produit supprimé')
+            MySwal.fire({
+                icon: 'success',
+                title: data.data.message,
+                footer: 'IPSSI - 2021',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                timer: 900,
+            });
             getProducts()
         })
     }
@@ -75,22 +86,25 @@ export default function Historic() {
     }
 
     function update(e, product) {
-       
+        e.preventDefault();
+
         let url = `http://localhost:3001/api/product/${product._id}`
 
-        const { name, brandName, image,nutriGrade, category } = { ...formAjout }
-
         axios.put(url, {
-            name,
-            brandName,
-            image,
-            nutriGrade,
-            category
+            ...formAjout
         }).then(data => {
-            console.log(data?.data)
             setProducts(data?.data)
+            getProducts()
+            MySwal.fire({
+                icon: 'success',
+                title: data.data.message,
+                footer: 'IPSSI - 2021',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                timer: 900,
+            });
+            handleClose() 
         })
-        getProducts()
     }
 
     return (
@@ -104,8 +118,12 @@ export default function Historic() {
                         <InputGroup className="mb-3">
                             <FormControl
                                 placeholder="Chercher un produit"
-                                value={code}
-                                onChange={(e) => setCode(e.target.value)}
+                                name="name"
+                                onChange={(e) => {
+                                    let tmp = { ...formAjout }
+                                    tmp.name = e.target.value
+                                    setFormAjout(tmp)
+                                }}
                             />
                             <InputGroup.Text>
                                 Search {code}
@@ -183,7 +201,7 @@ export default function Historic() {
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Modifier le produit product</Modal.Title>
+                    <Modal.Title>Modifier le produit</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={(e) => update(e, product)}>
@@ -255,6 +273,15 @@ export default function Historic() {
                             )
                             })}
                         </Form.Select>
+
+                        <Form.Label>Note personnelle</Form.Label>
+                        <Form.Control as="textarea" rows={3}  name="content"
+                        value={formAjout.content}
+                        onChange={(e) => {
+                            let tmp = { ...formAjout }
+                            tmp.content = e.target.value
+                            setFormAjout(tmp)
+                        }} />
 
                         </Form.Group>
                         <Button variant="primary" type="submit">

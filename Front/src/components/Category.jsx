@@ -12,6 +12,11 @@ import {
   Modal
 } from "react-bootstrap"
 
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal)
+
 export default function Category() {
   const [formAjout, setFormAjout] = useState({})
   const [categs, setCategs] = useState([])
@@ -36,13 +41,17 @@ export default function Category() {
 
   function addCateg(event) {
     event.preventDefault()
-    const { name } = { ...formAjout }
     let url = `http://localhost:3001/api/category`
 
-    axios.post(url, {
-        name
-    }).then(res => {
-        alert('Catégorie ajouté avec succés')
+    axios.post(url, { ...formAjout }).then(res => {
+      MySwal.fire({
+        icon: 'success',
+        title: res.data.message,
+        footer: 'IPSSI - 2021',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        timer: 900,
+      });
         getCategories()
     })
   }
@@ -51,33 +60,42 @@ export default function Category() {
     let url = `http://localhost:3001/api/category/${categ._id}`
 
     axios.delete(url).then(res => {
-        alert('Catégorie supprimé avec succés')
+      MySwal.fire({
+        icon: 'success',
+        title: res.data.message,
+        footer: 'IPSSI - 2021',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        timer: 900,
+      });
         getCategories()
     })
   }
 
   function updateCateg(categ) {
-    console.log(categ)
     const tmp = {
         name: categ.name
     }
     setFormAjout(tmp)
     setCurrentCategs(categ)
     handleShow()
-    console.log(currentCateg)
-
 }
 
-function update(categ) {
-    console.log(categ)
-    const { name } = { ...formAjout }
+function update(e, categ) {
+    e.preventDefault();
     let url = `http://localhost:3001/api/category/${categ._id}`
 
-    axios.put(url, {
-        name
-    }).then(res => {
-        alert('Catégorie modifié avec succés')
+    axios.put(url, { ...formAjout }).then(res => {
+      MySwal.fire({
+        icon: 'success',
+        title: res.data.message,
+        footer: 'IPSSI - 2021',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        timer: 900,
+    });
         getCategories()
+        handleClose()
     })
 }
 
@@ -153,7 +171,7 @@ function update(categ) {
         <Modal.Title>Modifier la catégorie {currentCateg?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <Form onSubmit={() => update(currentCateg)}>
+            <Form onSubmit={(e) => update(e, currentCateg)}>
                 <Form.Group className="mb-3">
                 <Form.Label>Nom</Form.Label>
                 <Form.Control
