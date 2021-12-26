@@ -15,6 +15,11 @@ import {
     ListGroupItem
   } from "react-bootstrap"
 
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal)
+
 export default function Scan() {
   const [scan, setScan] = useState(false);
   const [logs, setLog] = useState([]);
@@ -44,7 +49,14 @@ export default function Scan() {
     let url = `http://localhost:3001/api/product`
 
     axios.post(url, data).then( data => {
-        alert('Produit ajouté avec succés')
+        MySwal.fire({
+            icon: 'success',
+            title: data.data.message,
+            footer: 'IPSSI - 2021',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            timer: 900,
+        });
     })
   }
 

@@ -1,7 +1,5 @@
 import { React, useState, useEffect } from "react"
 
-//import BarcodeScannerComponent from "react-qr-barcode-scanner";
-
 import axios from "axios"
 
 import {
@@ -17,12 +15,16 @@ import {
   ListGroupItem
 } from "react-bootstrap"
 
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal)
+
 export default function Home() {
   const [code, setCode] = useState('3274080005003')
   const [foods, setFoods] = useState({})
   const [formAjout, setFormAjout] = useState({})
   const [categs, setCategs] = useState([])
-  //const [camView, setCamView] = useState("user");
 
 
   useEffect(() => {
@@ -36,66 +38,37 @@ export default function Home() {
     let url = `https://world.openfoodfacts.org/api/v0/product/${code}.json`
 
     axios.get(url).then( data => {
-      console.log(data)
       setFoods(data)
     })
   }
 
-//   function addProduct() {
-//     let url = `https://world.openfoodfacts.org/api/v0/product/${code}.json`
-
-//     // axios.post(url, foods).then( data => {
-//     //   console.log(data)
-//     //   setFoods(data)
-//     // })
-//   }
-
   function addProduct(event) {
     event.preventDefault()
-    const { category} = { ...formAjout }
-    console.log(formAjout)
+    const { category, content } = { ...formAjout }
     const data = {
         category,
         name: foods?.data?.product?.product_name_fr,
         brandName: foods?.data?.product?.brands,
         nutriGrade: foods?.data?.product?.nutrition_grade_fr,
-        image: foods?.data?.product?.image_front_small_url
+        image: foods?.data?.product?.image_front_small_url,
+        content: content
     }
-    // alert(category)
     let url = `http://localhost:3001/api/product`
 
     axios.post(url, data).then( data => {
-        alert('Produit ajouté avec succés')
+      MySwal.fire({
+        icon: 'success',
+        title: data.data.message,
+        footer: 'IPSSI - 2021',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        timer: 900,
+      });
     })
   }
 
   return (
     <div className="App">
-
-      {/* <div>
-      <BarcodeScannerComponent
-                    width={465}
-                    height={400}
-                    facingMode={camView}
-                    onUpdate={(err, result) => {
-                        if(result){
-                            setCode(result.text);
-                            // setTimeout(()=>{
-                            //     addProduct(result.text);
-                            //     closeModal();
-                            // },200)
-                            console.log(result)
-                        }
-                        if(err) {
-                          console.log("msg", err)
-                        }
-
-                        console.log('ici')
-
-                    }}
-                />
-      </div> */}
-
       <Container>
         <Row className="mt-5">
           <Col md="6">
@@ -156,6 +129,13 @@ export default function Home() {
                   )
                 })}
               </Form.Select>
+              <Form.Label>Note personnelle</Form.Label>
+              <Form.Control as="textarea" rows={3}  name="content"
+              onChange={(e) => {
+                let tmp = { ...formAjout }
+                tmp.content = e.target.value
+                setFormAjout(tmp)
+              }} />
               <Button variant="info" className="mt-3 text-left" type="submit">
                 Enregistrer
               </Button>
@@ -165,85 +145,6 @@ export default function Home() {
 
     </Container>
       }
-
-      {/* <Container>
-        <Row mt={5}>
-          <Col md="6">
-            <h1>Formulaire ajout utilisateur</h1>
-            <hr />
-
-            <Form.Label>Catégorie</Form.Label>
-            <Form onSubmit={(e) => addUser(e)}>
-              <Form.Select
-                name="category"
-                value={formAjout.category}
-                onChange={(e) => {
-                  let tmp = { ...formAjout }
-                  tmp.category = e.target.value
-                  setFormAjout(tmp)
-                }}
-              >
-                {categs.map((categ) => {
-                  return (
-                    <option key={categ._id} value={categ._id}>
-                      {categ.name}
-                    </option>
-                  )
-                })}
-              </Form.Select>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Nom</Form.Label>
-                <Form.Control
-                  value={formAjout.nom}
-                  type="nom"
-                  placeholder="Larrat"
-                  required
-                  onChange={(e) => {
-                    let tmp = { ...formAjout }
-                    tmp.nom = e.target.value
-                    setFormAjout(tmp)
-                  }}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Prenom</Form.Label>
-                <Form.Control
-                  value={formAjout.prenom}
-                  type="prenom"
-                  placeholder="Philippe"
-                  required
-                  onChange={(e) => {
-                    let tmp = { ...formAjout }
-                    tmp.prenom = e.target.value
-                    setFormAjout(tmp)
-                  }}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Age</Form.Label>
-                <Form.Control
-                  value={formAjout.age}
-                  type="number"
-                  placeholder="ex : 20"
-                  required
-                  onChange={(e) => {
-                    let tmp = { ...formAjout }
-                    tmp.age = e.target.value
-                    setFormAjout(tmp)
-                  }}
-                />
-              </Form.Group>
-
-              <Button variant="info" type="submit">
-                Enregistrer
-              </Button>
-            </Form>
-          </Col>
-        </Row>
-      </Container> */}
     </div>
   )
 }
