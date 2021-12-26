@@ -7,25 +7,16 @@ import {
   Container,
   Row,
   Col,
-  InputGroup,
-  FormControl,
   Form,
   Button,
-  Modal,
-  Card,
-  ListGroup,
-  ListGroupItem
+  Modal
 } from "react-bootstrap"
 
 export default function Category() {
-  const [foods, setFoods] = useState({})
   const [formAjout, setFormAjout] = useState({})
   const [categs, setCategs] = useState([])
   const [currentCateg, setCurrentCategs] = useState({})
   const [show, setShow] = useState(false);
-
-  //const [camView, setCamView] = useState("user");
-
 
   useEffect(() => {
    getCategories()
@@ -57,8 +48,6 @@ export default function Category() {
   }
 
   function deleteCateg(categ) {
-      console.log(categ)
-    const { name } = { ...formAjout }
     let url = `http://localhost:3001/api/category/${categ._id}`
 
     axios.delete(url).then(res => {

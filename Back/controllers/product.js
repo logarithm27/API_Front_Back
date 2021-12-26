@@ -66,6 +66,22 @@ exports.getOneProduct = (req, res, next) => {
     );
 }
 
+exports.getProductByCategory = (req, res, next) => {
+  Product.find({
+    category: req.params.id
+  }).populate('category', 'name').then(
+    (product) => {
+      res.status(200).json(product);
+    }
+  ).catch(
+    (error) => {
+      res.status(404).json({
+        error: error
+      });
+    }
+  );
+}
+
 exports.getAllProduct = (req, res, next) => {
     Product.find().populate('category', 'name').then(
       (products) => {
