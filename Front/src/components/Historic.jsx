@@ -8,23 +8,16 @@ import {
     InputGroup,
     FormControl,
     Button,
-    Card,
     Modal,
-    Form,
-    ListGroup,
-    ListGroupItem
+    Form
 } from "react-bootstrap"
 
 export default function Historic() {
     const [code, setCode] = useState('')
     const [products, setProducts] = useState([])
     const [product, setProduct] = useState({})
-    const [currentCateg, setCurrentCategs] = useState({})
     const [categs, setCategs] = useState([])
-
-
     const [formAjout, setFormAjout] = useState({})
-
     const [show, setShow] = useState(false);
 
     useEffect(() => {
@@ -35,7 +28,17 @@ export default function Historic() {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    function search() {
+    function searchByName() {
+
+    }
+
+    function searchByCategory() {
+        const {category } = { ...formAjout }
+        console.log(category)
+        axios.get(`http://localhost:3001/api/product/category/${category}`).then((datas) => {
+            console.log(datas?.data)
+           setProducts(datas?.data)
+        })
 
     }
 
@@ -66,18 +69,8 @@ export default function Historic() {
     }
 
     function updateProduct(p) {
-        console.log('p', p)
-        const tmp = {
-            brandName: p?.brandName,
-            name: p?.name,
-            image: p?.image,
-            nutriGrade: p?.nutriGrade,
-            category: p?.category?._id
-        }
-        //console.log(tmp)
         setFormAjout(p)
         setProduct(p)
-        // console.log('pro', product)
         handleShow()
     }
 
@@ -119,7 +112,7 @@ export default function Historic() {
                             </InputGroup.Text>
                         </InputGroup>
 
-                        <Button variant="info" onClick={search}>
+                        <Button variant="info" onClick={searchByName}>
                             Chercher un produit
                     </Button>
                     </Col>
@@ -147,7 +140,7 @@ export default function Historic() {
                             })}
                         </Form.Select>
 
-                        <Button variant="info" onClick={search}>
+                        <Button variant="info" onClick={searchByCategory}>
                             Chercher par catégorie
                     </Button>
                     </Col>

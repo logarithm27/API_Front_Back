@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const category = require('./category')
 
 const productShema = mongoose.Schema({
   name: { type: String, required: true },
@@ -7,7 +8,7 @@ const productShema = mongoose.Schema({
   image: { type: String, required: true },
   insertAt: { type: Date, required: true, default: Date.now() },
   content: {type: String, required: false},
-  category: {type: mongoose.Schema.Types.ObjectId, ref: 'Category' }
+  category: {type: mongoose.Schema.Types.ObjectId, ref: category }
 });
 
 module.exports = mongoose.model('Product', productShema);
