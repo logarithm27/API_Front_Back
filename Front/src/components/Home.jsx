@@ -15,16 +15,20 @@ import {
   ListGroupItem
 } from "react-bootstrap"
 
+import load from '../assets/load.gif'
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
 const MySwal = withReactContent(Swal)
+
 
 export default function Home() {
   const [code, setCode] = useState('3274080005003')
   const [foods, setFoods] = useState({})
   const [formAjout, setFormAjout] = useState({})
   const [categs, setCategs] = useState([])
+  const [isLoad, setLoad] = useState(false)
 
 
   useEffect(() => {
@@ -36,9 +40,24 @@ export default function Home() {
 
   function getFood() {
     let url = `https://world.openfoodfacts.org/api/v0/product/${code}.json`
+    setLoad(true)
+    setFoods({});
 
     axios.get(url).then( data => {
-      setFoods(data)
+
+      if(data.data.status === 1 && data.data.status_verbose === "product found") {
+        setFoods(data)
+      } 
+
+      if(data.data.status === 0 && data.data.status_verbose === "product not found") {
+        MySwal.fire({
+          icon: 'error',
+          title: 'Aucun produit trouvé !',
+          footer: 'IPSSI - 2021',
+          allowOutsideClick: false,
+        });
+      }
+      setLoad(false)
     })
   }
 
@@ -70,7 +89,7 @@ export default function Home() {
   return (
     <div className="App">
       <Container>
-        <Row className="mt-5">
+        <Row>
           <Col md="6">
             <h1>Scanner ou saisir le code barre d'un produit</h1>
             <hr />
@@ -92,6 +111,16 @@ export default function Home() {
           </Col>
         </Row>
       </Container>
+
+      { isLoad &&
+      <Container>
+        <Row className="mt-5">
+          <Col md="6">
+          <img src={load} alt="loading..." />
+          </Col>
+        </Row>
+      </Container>
+      }
 
       {foods.hasOwnProperty('data') && 
       <Container className="mt-3 text-center">

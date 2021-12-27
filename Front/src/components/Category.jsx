@@ -134,7 +134,7 @@ function update(e, categ) {
             }
                   
           <Col md="6" className="mt-3">
-            <h3>Liste des produits</h3>
+            <h3>Liste des catégories</h3>
             <hr />
             
             {categs.length > 0 && 

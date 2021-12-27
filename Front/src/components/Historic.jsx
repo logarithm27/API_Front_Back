@@ -12,6 +12,8 @@ import {
     Form
 } from "react-bootstrap"
 
+import load from '../assets/load.gif'
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
@@ -24,6 +26,7 @@ export default function Historic() {
     const [categs, setCategs] = useState([])
     const [formAjout, setFormAjout] = useState({})
     const [show, setShow] = useState(false);
+    const [isLoad, setLoad] = useState(false)
 
     useEffect(() => {
         getProducts()
@@ -35,15 +38,27 @@ export default function Historic() {
 
     function searchByName() {
         const {name} = {...formAjout}
+        setLoad(true)
+
+        console.log(name)
+        if(name !== '' && name !== undefined) {
+            axios.get(`http://localhost:3001/api/product/name/${name}`).then((datas) => {
+                setLoad(false)
+                setProducts(datas?.data)
+            })
+        } else {
+            getProducts()
+        }        
         
-        axios.get(`http://localhost:3001/api/product/name/${name}`).then((datas) => {
-           setProducts(datas?.data)
-        })
+        
     }
 
     function searchByCategory() {
         const {category } = { ...formAjout }
+        setLoad(true)
+
         axios.get(`http://localhost:3001/api/product/category/${category}`).then((datas) => {
+        setLoad(false)
            setProducts(datas?.data)
         })
 
@@ -57,8 +72,10 @@ export default function Historic() {
 
     function getProducts() {
         let url = `http://localhost:3001/api/product`
+        setLoad(true)
 
         axios.get(url).then(data => {
+            setLoad(false)
             setProducts(data?.data)
         })
     }
@@ -168,7 +185,18 @@ export default function Historic() {
 
             <Container>
                 <h3 className="mt-3" >Liste des produits : {products.length}</h3>
-                {products.length > 0 &&
+
+                { isLoad &&
+                    <Container>
+                        <Row className="mt-5">
+                        <Col md="6">
+                        <img src={load} alt="loading..." />
+                        </Col>
+                        </Row>
+                    </Container>
+                }
+
+                {products.length > 0 && !isLoad &&
                     products.map((product) =>
                         <Row mt={3}>
                             <Col className="mt-1" >
