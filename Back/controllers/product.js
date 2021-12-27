@@ -22,7 +22,7 @@ exports.updateProduct = (req, res, next) => {
     Product.updateOne({_id: req.params.id}, product).then(
       () => {
         res.status(201).json({
-          message: 'Produit modifé avec succès !'
+          message: 'Produit modifié avec succès !'
         });
       }
     ).catch(

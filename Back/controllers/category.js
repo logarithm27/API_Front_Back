@@ -22,7 +22,7 @@ exports.updateCategory = (req, res) => {
     Category.updateOne({_id: req.params.id}, category).then(
       () => {
         res.status(201).json({
-          message: 'Catégorie modifé avec succès !'
+          message: 'Catégorie modifié avec succès !'
         });
       }
     ).catch(

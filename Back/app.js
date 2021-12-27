@@ -23,9 +23,7 @@ const productRoutes = require('./routes/product');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
 });
-/*
-app.use(cors());
-*/
+
 app.use(bodyParser.urlencoded({
     extended: true
 }));
